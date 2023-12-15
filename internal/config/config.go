@@ -4,11 +4,13 @@ import (
 	"github.com/mcuadros/go-defaults"
 	"github.com/spf13/viper"
 	"youtube/internal/app"
+	"youtube/internal/db"
 )
 
 type Config struct {
-	Name string     `mapstructure:"name" default:"youtube"`
-	App  app.Config `mapstructure:"server"`
+	Name     string     `mapstructure:"name" default:"youtube"`
+	App      app.Config `mapstructure:"server"`
+	Database db.Config  `mapstructure:"database"`
 }
 
 func LoadConfig(path string) (*Config, error) {

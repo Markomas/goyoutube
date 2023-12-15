@@ -1,0 +1,15 @@
+POST http://localhost:8080/api
+Content-Type: application/json
+X-API-KEY: abc
+
+{}
+
+###
+
+POST http://localhost:8080/api
+Content-Type: application/json
+X-API-KEY: abc123
+
+{}
+
+###

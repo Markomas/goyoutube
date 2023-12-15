@@ -5,14 +5,17 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"youtube/internal/model"
+	"youtube/internal/security"
 )
 
 type App struct {
-	Config *Config
+	config  *Config
+	service *Service
 }
 
-func NewApp(config *Config) *App {
-	return &App{Config: config}
+func NewApp(config *Config, service *Service) *App {
+	return &App{config: config, service: service}
 }
 
 func (a *App) Run() error {
@@ -22,6 +25,17 @@ func (a *App) Run() error {
 		_, _ = fmt.Fprintf(w, "Hello World!")
 	})
 
-	log.Printf("Server listening http://localhost:%d\n", a.Config.Port)
-	return http.ListenAndServe(":"+strconv.Itoa(a.Config.Port), mux)
+	mux.HandleFunc(
+		"/api",
+		security.ApiKeyMiddleware(
+			func(w http.ResponseWriter, r *http.Request) {
+				u := r.Context().Value("user")
+				fmt.Fprintf(w, "Hello world: %s", u.(*model.User).Username)
+			},
+			a.service.Database,
+		),
+	)
+
+	log.Printf("Server listening http://localhost:%d\n", a.config.Port)
+	return http.ListenAndServe(":"+strconv.Itoa(a.config.Port), mux)
 }
